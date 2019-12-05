@@ -1,22 +1,35 @@
-export class AddressBook {
-  contacts = [];
+interface Contact {
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  addresses?: { [k in string]: Address };
+  phones?: { [k in string]: string } | undefined;
+  salutation?: string;
+  email?: string;
+}
 
-  addContact(contact) {
+interface Address {
+  houseNumber: number;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: number;
+  country: string;
+}
+
+export class AddressBook {
+  contacts: Contact[] = [];
+
+  addContact(contact: Contact) {
     this.contacts.push(contact);
   }
 
-  findContactByName(filter) {
+  findContactByName(filter: Contact) {
     return this.contacts.filter(c => {
-      if (
-        typeof filter.firstName !== "undefined" &&
-        c.firstName !== filter.firstName
-      ) {
+      if (typeof filter.firstName !== 'undefined' && c.firstName !== filter.firstName) {
         return false;
       }
-      if (
-        typeof filter.lastName !== "undefined" &&
-        c.lastName !== filter.lastName
-      ) {
+      if (typeof filter.lastName !== 'undefined' && c.lastName !== filter.lastName) {
         return false;
       }
       return true;
@@ -24,46 +37,33 @@ export class AddressBook {
   }
 }
 
-export function formatDate(date) {
+export function formatDate(date: Date): string {
   return (
     date
       .toISOString()
-      .replace(/[-:]+/g, "")
-      .split(".")[0] + "Z"
+      .replace(/[-:]+/g, '')
+      .split('.')[0] + 'Z'
   );
 }
 
-function getFullName(contact) {
-  return [contact.firstName, contact.middleName, contact.lastName]
-    .filter(Boolean)
-    .join(" ");
+function getFullName(contact: Contact): string {
+  return [contact.firstName, contact.middleName, contact.lastName].filter(Boolean).join(' ');
 }
 
-export function getVcardText(contact, date = new Date()) {
+export function getVcardText(contact: Contact, date = new Date()): string {
   const parts = [
-    "BEGIN:VCARD",
-    "VERSION:2.1",
-    `N:${contact.lastName};${contact.firstName};${contact.middleName ||
-      ""};${contact.salutation || ""}`,
+    'BEGIN:VCARD',
+    'VERSION:2.1',
+    `N:${contact.lastName};${contact.firstName};${contact.middleName || ''};${contact.salutation || ''}`,
     `FN:${getFullName(contact)}`,
-    ...Object.keys(contact.phones).map(
-      phName => `TEL;${phName.toUpperCase()};VOICE:${contact.phones[phName]}`
-    ),
+    ...Object.keys(contact.phones).map(phName => `TEL;${phName.toUpperCase()};VOICE:${contact.phones[phName]}`),
     ...Object.keys(contact.addresses)
       .map(addrName => {
         const address = contact.addresses[addrName];
         if (address) {
-          return `ADR;${addrName.toUpperCase()}:;;${address.houseNumber} ${
-            address.street
-          };${address.city};${address.state};${address.postalCode};${
-            address.country
-          }\nLABEL;${addrName.toUpperCase()};ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:${
-            address.houseNumber
-          } ${address.street}.=0D=0A=${address.city}, ${address.state} ${
-            address.postalCode
-          }=0D=0A${address.country}`;
+          return `ADR;${addrName.toUpperCase()}:;;${address.houseNumber} ${address.street};${address.city};${address.state};${address.postalCode};${address.country}\nLABEL;${addrName.toUpperCase()};ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:${address.houseNumber} ${address.street}.=0D=0A=${address.city}, ${address.state} ${address.postalCode}=0D=0A${address.country}`;
         } else {
-          return "";
+          return '';
         }
       })
       .filter(Boolean)
@@ -74,6 +74,6 @@ export function getVcardText(contact, date = new Date()) {
   }
   const d = new Date();
   parts.push(`REV:${formatDate(date)}`);
-  parts.push("END:VCARD");
-  return parts.join("\n");
+  parts.push('END:VCARD');
+  return parts.join('\n');
 }

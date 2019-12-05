@@ -1,4 +1,4 @@
-import { HasEmail } from "./1-basics";
+import { HasEmail } from './1-basics';
 
 /**
  * (1) Generics allow us to parameterize types in the same way that
@@ -6,19 +6,19 @@ import { HasEmail } from "./1-basics";
  */
 
 // // param determines the value of x
-// function wrappedValue(x: any) {
-//   return {
-//     value: x
-//   };
-// }
+function wrappedValue(x: any) {
+  return {
+    value: x
+  };
+}
 
 // // type param determines the type of x
-// interface WrappedValue<X> {
-//   value: X;
-// }
+interface WrappedValue<X> {
+  value: X;
+}
 
-// let val: WrappedValue<string[]> = { value: [] };
-// val.value;
+let val: WrappedValue<string[]> = { value: [] };
+val.value; // string[]
 
 /**
  * we can name these params whatever we want, but a common convention
@@ -31,58 +31,61 @@ import { HasEmail } from "./1-basics";
  */
 
 // // for Array.prototype.filter
-// interface FilterFunction<T = any> {
-//   (val: T): boolean;
-// }
+interface FilterFunction<T = any> {
+  (val: T): boolean;
+}
 
-// const stringFilter: FilterFunction<string> = val => typeof val === "string";
-// stringFilter(0); // 🚨 ERROR
-// stringFilter("abc"); // ✅ OK
+const stringFilter: FilterFunction<string> = val => typeof val === 'string';
+stringFilter(0); // 🚨 ERROR
+stringFilter('abc'); // ✅ OK
 
 // // can be used with any value
-// const truthyFilter: FilterFunction = val => val;
-// truthyFilter(0); // false
-// truthyFilter(1); // true
-// truthyFilter(""); // false
-// truthyFilter(["abc"]); // true
+const truthyFilter: FilterFunction = val => val;
+truthyFilter(0); // false
+truthyFilter(1); // true
+truthyFilter(''); // false
+truthyFilter(['abc']); // true
 
 /**
  * (3) You don't have to use exactly your type parameter as an arg
  * -   things that are based on your type parameter are fine too
  */
 
-// function resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
-//   return new Promise<T>((resolve, reject) => {
-//     // start the timeout, reject when it triggers
-//     const task = setTimeout(() => reject("time up!"), timeout);
+function resolveOrTimeout<T>(promise: Promise<T>, timeout: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    // start the timeout, reject promise when fetch doesn't respond within timeout
+    const task = setTimeout(() => reject('time up!'), timeout);
 
-//     promise.then(val => {
-//       // cancel the timeout
-//       clearTimeout(task);
+    // promise here is the fetch function
+    promise.then(val => {
+      // cancel the timeout once fetch returns a value
+      clearTimeout(task);
 
-//       // resolve with the value
-//       resolve(val);
-//     });
-//   });
-// }
-// resolveOrTimeout(fetch(""), 3000);
+      // resolve with the value returned from fetch
+      resolve(val);
+    });
+  });
+}
+resolveOrTimeout(fetch(''), 3000);
 
 /**
  * (4) Type parameters can have constraints
  */
 
-// function arrayToDict<T extends { id: string }>(array: T[]): { [k: string]: T } {
-//   const out: { [k: string]: T } = {};
-//   array.forEach(val => {
-//     out[val.id] = val;
-//   });
-//   return out;
-// }
+function arrayToDict<T extends { id: string }>(array: T[]): { [k: string]: T } {
+  const out: { [k: string]: T } = {};
+  array.forEach(val => {
+    out[val.id] = val;
+  });
+  return out;
+}
 
-// const myDict = arrayToDict([
-//   { id: "a", value: "first", lisa: "Huang" },
-//   { id: "b", value: "second" }
-// ]);
+const myDict = arrayToDict([
+  { id: 'a', value: 'first', lisa: 'Huang' },
+  { id: 'b', value: 'second' }
+]);
+
+myDict.value;
 
 /**
  * (5) Type parameters are associated with scopes, just like function arguments
