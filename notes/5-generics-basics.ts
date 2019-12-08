@@ -91,12 +91,12 @@ myDict.value;
  * (5) Type parameters are associated with scopes, just like function arguments
  */
 
-// function startTuple<T>(a: T) {
-//   return function finishTuple<U>(b: U) {
-//     return [a, b] as [T, U];
-//   };
-// }
-// const myTuple = startTuple(["first"])(42);
+function startTuple<T>(a: T) {
+  return function finishTuple<U>(b: U) {
+    return [a, b] as [T, U];
+  };
+}
+const myTuple = startTuple(['first'])(42); // [string: [], number]
 
 /**
  * (6) When to use generics
@@ -108,12 +108,12 @@ myDict.value;
  * - it can probably be eliminated
  */
 
-// interface Shape {
-//   draw();
-// }
-// interface Circle extends Shape {
-//   radius: number;
-// }
+interface Shape {
+  draw();
+}
+interface Circle extends Shape {
+  radius: number;
+}
 
 // function drawShapes1<S extends Shape>(shapes: S[]) {
 //   shapes.forEach(s => s.draw());
